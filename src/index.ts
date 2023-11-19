@@ -1,9 +1,13 @@
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
-type MyContext = {
-  token?: String;
-};
+import { env } from './config.js';
+import { MyContext } from './types';
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
@@ -44,20 +48,40 @@ const resolvers = {
   },
 };
 
-// The ApolloServer constructor requires two parameters: your schema
-// definition and your set of resolvers.
+const app = express();
+
+const httpServer = http.createServer(app);
+
 const server = new ApolloServer<MyContext>({
   typeDefs,
   resolvers,
+  plugins: [
+    ApolloServerPluginDrainHttpServer({
+      httpServer,
+      stopGracePeriodMillis: 10_000,
+    }),
+  ],
 });
 
-// Passing an ApolloServer instance to the `startStandaloneServer` function:
-//  1. creates an Express app
-//  2. installs your ApolloServer instance as middleware
-//  3. prepares your app to handle incoming requests
-const { url } = await startStandaloneServer(server, {
-  context: async ({ req }) => ({ token: req.headers.token }),
-  listen: { port: 4000 },
-});
+await server.start();
 
-console.log(`🚀 Server listening at: ${url}`);
+app.use(
+  `/${env.APP_PATH}`,
+  cors<cors.CorsRequest>(),
+  bodyParser.json({ limit: '50mb' }),
+  expressMiddleware(server, {
+    context: async ({ req }) => ({ token: req.headers.token }),
+  }),
+);
+
+await new Promise<void>((resolve) =>
+  httpServer.listen(
+    {
+      host: env.APP_HOST,
+      port: env.APP_PORT,
+    },
+    resolve,
+  ),
+);
+
+console.log(`Server ready at http://${env.APP_HOST}:${env.APP_PORT}/${env.APP_PATH}`);
