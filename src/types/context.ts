@@ -1,3 +1,3 @@
-export type MyContext = {
+export type AppContext = {
   token?: string;
 };

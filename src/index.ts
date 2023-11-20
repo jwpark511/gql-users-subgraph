@@ -7,7 +7,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 
 import { env } from './config.js';
-import { MyContext } from './types';
+import { AppContext } from './types';
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
@@ -52,7 +52,7 @@ const app = express();
 
 const httpServer = http.createServer(app);
 
-const server = new ApolloServer<MyContext>({
+const server = new ApolloServer<AppContext>({
   typeDefs,
   resolvers,
   plugins: [
@@ -84,4 +84,6 @@ await new Promise<void>((resolve) =>
   ),
 );
 
-console.log(`Server ready at http://${env.APP_HOST}:${env.APP_PORT}/${env.APP_PATH}`);
+console.log(
+  `Server ready at http://${env.APP_HOST}:${env.APP_PORT}/${env.APP_PATH}`,
+);
