@@ -6,8 +6,8 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=20",
-    "npm": ">=10"
+    "node": "^20.0.0",
+    "npm": "^10.0.0"
   },
   "scripts": {
     "install:clean": "rm -rf node_modules && npm install",
@@ -16,27 +16,29 @@
     "lint:fix": "tsc --noEmit && eslint --ext .ts src --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
     "transpile": "tsc",
-    "start": "NODE_ENV=production npm run transpile && node dist/index.js",
-    "start:dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning --loader ts-node/esm src/index.ts"
+    "start": "npm run start:dev",
+    "start:dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning --loader ts-node/esm src/index.ts",
+    "start:prod": "NODE_ENV=production npm run transpile && node dist/index.js"
   },
   "dependencies": {
-    "@apollo/server": "^4.9.5",
+    "@apollo/server": "^4.10.0",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "envalid": "^8.0.0",
     "express": "^4.18.2",
     "graphql": "^16.8.1"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.16",
-    "@types/node": "^20.9.2",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "eslint": "^8.54.0",
-    "eslint-config-standard-with-typescript": "^40.0.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-n": "^16.3.1",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.11.19",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "eslint": "^8.56.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
-    "prettier": "^3.1.0",
-    "ts-node": "^10.9.1",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   }
 }
